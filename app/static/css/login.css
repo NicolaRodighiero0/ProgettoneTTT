@@ -1,0 +1,184 @@
+/* Variables for theme colors */
+:root {
+    --primary-color: #5B61B2;
+    --primary-hover: #4a4f9b;
+    --bg-light: #ffffff;
+    --bg-dark: #212529;
+    --text-light: #4a3636;  /* Brown text for light mode */
+    --text-dark: #000000;   /* Black text for dark mode */
+    --card-light: #e8a9a9;  /* Pink card for light mode */
+    --card-dark: #5B61B2;   /* Blue card for dark mode */
+    --border-light: #c9adc6;
+    --border-dark: #4a4f9b;
+}
+
+.login-section {
+    min-height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-light);
+}
+
+[data-theme="dark"] .login-section {
+    background: var(--bg-dark);
+}
+
+.login-card {
+    background: var(--card-light);
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .login-card {
+    background: var(--card-dark);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+.login-card .card-header {
+    background: transparent;
+    border: none;
+    padding: 2rem 2rem 0;
+}
+
+.login-card .card-header h3 {
+    color: var(--text-light);
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-label {
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+[data-theme="dark"] .login-card .card-header h3,
+[data-theme="dark"] .form-label {
+    color: var(--text-dark);
+}
+
+.text-muted {
+    color: var(--text-light) !important;
+    opacity: 0.8;
+}
+
+[data-theme="dark"] .text-muted {
+    color: var(--text-dark) !important;
+    opacity: 0.7;
+}
+
+.form-control {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid var(--border-light);
+    color: var(--text-light);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    transition: all 0.3s;
+}
+
+[data-theme="dark"] .form-control {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+[data-theme="dark"] .form-control:focus {
+    background: transparent;
+    color: var(--text-dark);
+}
+
+.input-group-text {
+    background: rgba(255, 255, 255, 0.9);
+    border-right: none;
+    color: var(--text-light);
+    border-color: var(--border-light);
+}
+
+[data-theme="dark"] .input-group-text {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text-dark);
+    border-color: var(--border-dark);
+}
+
+/* Button styles */
+.btn-primary {
+    background: var(--text-light);
+    color: var(--card-light);
+    border: none;
+    padding: 0.8rem;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: var(--text-light);
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(74, 54, 54, 0.3);
+}
+
+[data-theme="dark"] .btn-primary {
+    background: #000000;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+    background: #000000;
+    opacity: 0.9;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-text {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+[data-theme="dark"] .welcome-text {
+    color: var(--text-dark);
+}
+
+.brand-icon {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.brand-icon img {
+    width: 80px;
+    height: auto;
+}
+
+/* Password toggle button */
+.password-toggle {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    z-index: 10;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.password-toggle:focus {
+    outline: none;
+}
+
+[data-theme="dark"] .password-toggle {
+    color: var(--text-dark);
+}

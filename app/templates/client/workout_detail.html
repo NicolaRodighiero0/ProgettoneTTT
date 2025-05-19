@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Scheda: {{ plan.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-3">{{ plan.name }}</h2>
+  <p class="text-muted">Creato il {{ plan.created_at[:10] }}
+     • Trainer: {{ plan.trainer_name }}</p>
+
+  <table class="table table-bordered align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>#</th><th>Esercizio</th><th>Serie × Rip.</th>
+        <th>Tempo&nbsp;exec</th><th>Rest</th><th>Peso&nbsp;sugg.</th>
+        <th>Macchina</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ex in exercises %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ ex.exercise_name }}</td>
+          <td>
+            {% if ex.sets %}{{ ex.sets }} ×{% endif %}
+            {% if ex.repetitions %}{{ ex.repetitions }}{% endif %}
+          </td>
+          <td>{{ ex.execution_time or '—' }}</td>
+          <td>{{ ex.rest_time or '—' }}</td>
+          <td>{{ ex.suggested_weight or '—' }}</td>
+          <td>{{ ex.machine_name or '—' }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{{ url_for('client.dashboard') }}" class="btn btn-secondary">‹ Torna</a>
+</div>
+{% endblock %}

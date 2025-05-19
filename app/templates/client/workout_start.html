@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}{{ plan.name }} – Lista esercizi{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-2">{{ plan.name }}</h2>
+  <p class="text-muted">Trainer: {{ plan.trainer_name }}</p>
+
+  <table class="table table-hover align-middle">
+    <thead class="table-dark">
+      <tr><th>#</th><th>Esercizio</th><th>Serie×Rip.</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for ex in exercises %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ ex.exercise_name }}</td>
+          <td>
+            {% if ex.sets %}{{ ex.sets }}×{% endif %}
+            {{ ex.repetitions or '–' }}
+          </td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-success"
+               href="{{ url_for('client.workout_do',
+                                plan_id=plan.id, pos=loop.index) }}">
+              Avvia
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{{ url_for('client.dashboard') }}" class="btn btn-secondary">‹ Torna</a>
+</div>
+{% endblock %}

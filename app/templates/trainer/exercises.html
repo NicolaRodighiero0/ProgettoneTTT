@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Esercizi{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-3">Esercizi</h2>
+
+  <a href="{{ url_for('trainer_page.new_exercise') }}"
+     class="btn btn-success mb-3">➕ Nuovo esercizio</a>
+
+  <table class="table table-striped align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th style="width:3rem;">#</th>
+        <th>Nome</th>
+        <th>Primari</th>
+        <th>Secondari</th>
+        <th>Obiettivo</th>
+        <th>Difficoltà</th>
+        <th class="text-center" style="width:14rem;">Azioni</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ex in exercises %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ ex.name }}</td>
+          <td>{{ ex.prim_str or '—' }}</td>
+          <td>{{ ex.sec_str  or '—' }}</td>
+          <td>{{ ex.objective or '—' }}</td>
+          <td>{{ ex.difficulty or '—' }}</td>
+          <td class="text-center">
+            <a class="btn btn-sm btn-outline-primary me-2"
+               href="{{ url_for('trainer_page.edit_exercise', ex_id=ex.id) }}">Modifica</a>
+
+            <form method="post" class="d-inline"
+                  action="{{ url_for('trainer_page.delete_exercise', ex_id=ex.id) }}"
+                  onsubmit="return confirm('Eliminare {{ ex.name }}?');">
+              <button class="btn btn-sm btn-outline-danger">Elimina</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="7" class="text-center py-4">Nessun esercizio.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

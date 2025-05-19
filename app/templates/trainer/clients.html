@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Gestione Clienti{% endblock %}
+
+{# --- (facoltativo) ulteriore CSS dedicato --- #}
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/trainer_clients.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <h1 class="mb-4">I tuoi clienti</h1>
+
+  {# -------------------- FLASH -------------------- #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"
+                  aria-label="Chiudi"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {# -------------------- FORM NUOVO CLIENTE -------------------- #}
+  <div class="card shadow-sm mb-5">
+    <div class="card-header fw-semibold">Crea nuovo cliente</div>
+    <div class="card-body">
+      <form method="post" class="row g-3">
+        <div class="col-12 col-md-5">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="col-12 col-md-5">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <div class="col-12 col-md-2 d-grid ms-auto">
+          <button type="submit" class="btn btn-primary mt-md-4">Aggiungi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {# -------------------- TABELLA CLIENTI -------------------- #}
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col" style="width:4rem;">#</th>
+          <th scope="col">Username</th>
+          <th scope="col" class="text-center" style="width:14rem;">Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for client in clients %}
+          <tr>
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ client.username }}</td>
+            <td class="text-center">
+
+              {# ➜ pulsante Schede #}
+              <a href="{{ url_for('trainer_page.list_workouts', client_id=client.id) }}"
+                 class="btn btn-sm btn-outline-info me-2">
+                 📋 Schede
+              </a>
+
+              {# ➜ pulsante Elimina (POST) #}
+              <form method="post"
+                    action="{{ url_for('trainer_page.delete_client', client_id=client.id) }}"
+                    class="d-inline"
+                    onsubmit="return confirm('Eliminare definitivamente {{ client.username }}?');">
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                  Elimina
+                </button>
+              </form>
+
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="3" class="text-center py-4">
+              Nessun cliente registrato.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

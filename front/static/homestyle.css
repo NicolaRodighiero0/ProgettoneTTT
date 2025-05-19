@@ -1,0 +1,146 @@
+/* Importazione font Poppins da Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+
+
+/* Stili base */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #ffffff; /* Default: tema chiaro */
+  color: #001524;
+  min-height: 100vh;
+  position: relative;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+/* Stili Navbar */
+#navbar {
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+  padding: 1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 4px solid var(--divider-line);
+}
+
+#navbar .brand {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+#theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  color: var(--footer-text);
+  cursor: pointer;
+}
+
+/* Imposta il layout principale per occupare l'intera altezza della finestra */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Assicura che il contenuto principale cresca e spinga il footer verso il basso */
+.container.mt-4 {
+  flex: 1;
+}
+.footer-custom {
+  padding: 5px 0;
+  font-size: 0.85rem; /* leggermente più grande e leggibile */
+  background-color: #15616d;
+  border-top: 4px solid #FF8C00;
+}
+
+.footer-custom h3 {
+  font-size: 1.1rem;   /* più grande */
+  font-weight: bold;   /* grassetto */
+  margin-bottom: 5px;
+}
+
+.footer-custom p,
+.footer-custom li {
+  margin: 2px 0;
+}
+
+.footer-custom .footer-content {
+  padding: 5px;
+}
+
+.footer-custom form input,
+.footer-custom form button {
+  font-size: 0.8rem;
+  padding: 4px;
+}
+
+
+
+.footer-custom button {
+  background-color: var(--footer-text);
+  color: var(--footer-bg);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.footer-custom button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.copyright {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 1rem 0;
+  text-align: center;
+}
+
+/* Social Icons */
+.footer-social-icon a {
+  color: white;
+  font-size: 1.5rem;
+  margin-right: 15px;
+  transition: color 0.3s;
+}
+
+.footer-social-icon a:hover {
+  color: var(--footer-text);
+}
+
+/* Responsività */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+  
+  .col-md-3, .col-md-6 {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .footer-content {
+    padding: 15px;
+  }
+}

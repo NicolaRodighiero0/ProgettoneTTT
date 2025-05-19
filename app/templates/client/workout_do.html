@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}{{ ex.exercise_name }}{% endblock %}
+
+{% block content %}
+{% set exec_t = (ex.execution_time or 0)|int %}
+{% set rest_t = (ex.rest_time     or 0)|int %}
+
+<style>
+  .stage      { max-width:640px; margin:auto; text-align:center; }
+  .stage img  { max-width:100%; border-radius:12px; }
+  .ratio      { border-radius:12px; overflow:hidden; }
+  #timer      { font-size:3.2rem; font-weight:600; }
+</style>
+
+<div class="container py-4 stage">
+  <p class="text-muted">Esercizio {{ pos }} / {{ total }}</p>
+  <h2 class="mb-3">{{ ex.exercise_name }}</h2>
+
+  <!-- ---------- MEDIA ---------- -->
+  {% if ex.media_url %}
+    {% if 'youtube' in ex.media_url %}
+      <div class="ratio ratio-16x9 mb-3">
+        <iframe src="{{ ex.media_url | replace('watch?v=','embed/') }}"
+                allowfullscreen loading="lazy"></iframe>
+      </div>
+    {% else %}
+      <img src="{{ ex.media_url }}" class="mb-3">
+    {% endif %}
+  {% endif %}
+
+  <!-- ---------- RIEPILOGO RAPIDO ---------- -->
+  <p class="mb-3">
+    {% if ex.sets %}<b>{{ ex.sets }}×</b>{% endif %}
+    {{ ex.repetitions or '' }}
+    {% if exec_t %}• {{ exec_t }} s{% endif %}
+    {% if rest_t %}• rec {{ rest_t }} s{% endif %}
+    {% if ex.suggested_weight %}• {{ ex.suggested_weight }} kg{% endif %}
+  </p>
+
+  <!-- ---------- TIMER (exec → rest) ---------- -->
+  {% if exec_t or rest_t %}
+    <div id="timerLabel" class="fw-semibold">{{ exec_t and 'Tempo di esecuzione' or 'Recupero' }}</div>
+    <div id="timer">{{ "%02d:%02d"|format(((exec_t or rest_t)//60), ((exec_t or rest_t)%60)) }}</div>
+    <button id="timerBtn" class="btn btn-primary mb-4">Avvia</button>
+  {% endif %}
+
+  <!-- ---------- SCHEDA TECNICA ---------- -->
+  <div class="text-start mb-4">
+    {% if ex.description %}
+      <p class="small mb-1"><em>{{ ex.description }}</em></p>
+    {% endif %}
+
+    <ul class="list-unstyled mb-2">
+      {% if ex.machine_name %}<li><b>Macchinario:</b> {{ ex.machine_name }}</li>{% endif %}
+      {% if ex.objective %}<li><b>Obiettivo:</b> {{ ex.objective }}</li>{% endif %}
+      {% if ex.difficulty %}<li><b>Difficoltà:</b> {{ ex.difficulty }}</li>{% endif %}
+      {% if ex.primary_groups %}
+        <li><b>Gruppi primari:</b> {{ ex.primary_groups }}</li>
+      {% endif %}
+      {% if ex.secondary_groups %}
+        <li><b>Gruppi secondari:</b> {{ ex.secondary_groups }}</li>
+      {% endif %}
+    </ul>
+
+    <h6>Caratteristiche richieste</h6>
+    <ul class="list-inline">
+      {% if ex.requires_repetitions %}<li class="list-inline-item badge bg-secondary">Ripetizioni</li>{% endif %}
+      {% if ex.requires_sets        %}<li class="list-inline-item badge bg-secondary">Serie</li>{% endif %}
+      {% if ex.requires_duration    %}<li class="list-inline-item badge bg-secondary">Tempo</li>{% endif %}
+      {% if ex.requires_rest        %}<li class="list-inline-item badge bg-secondary">Recupero</li>{% endif %}
+      {% if ex.requires_machine     %}<li class="list-inline-item badge bg-secondary">Macchinario</li>{% endif %}
+      {% if ex.requires_weight      %}<li class="list-inline-item badge bg-secondary">Peso</li>{% endif %}
+    </ul>
+  </div>
+
+  <!-- ---------- NAVIGAZIONE ---------- -->
+  <div class="d-flex justify-content-between">
+    {% if prev_pos %}
+      <a href="{{ url_for('client.workout_do', plan_id=plan.id, pos=prev_pos) }}"
+         class="btn btn-outline-secondary">‹ Precedente</a>
+    {% else %}<span></span>{% endif %}
+
+    {% if next_pos %}
+      <a href="{{ url_for('client.workout_do', plan_id=plan.id, pos=next_pos) }}"
+         class="btn btn-success">Avanti ›</a>
+    {% else %}
+      <a href="{{ url_for('client.dashboard') }}" class="btn btn-success">Finito ✔︎</a>
+    {% endif %}
+  </div>
+</div>
+
+{% if exec_t or rest_t %}
+<script>
+/* ========= dati ========= */
+const execInit = {{ exec_t }};
+const restInit = {{ rest_t }};
+
+/* ========= stato ========= */
+let phase     = execInit ? 'exec' : 'rest';   // fase corrente
+let remaining = phase === 'exec' ? execInit : restInit;
+let countdown = null;
+
+/* ========= DOM ========= */
+const btn   = document.getElementById('timerBtn');
+const label = document.getElementById('timer');
+const lblPh = document.getElementById('timerLabel');
+
+/* ========= helper ========= */
+const fmt = s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+
+function setPhase(newPhase){
+  phase        = newPhase;
+  remaining    = (phase==='exec') ? execInit : restInit;
+  lblPh.textContent = phase==='exec' ? 'Tempo di esecuzione' : 'Recupero';
+  label.textContent = fmt(remaining);
+  btn.textContent   = 'Avvia';
+}
+
+function tick(){
+  remaining--;
+  label.textContent = fmt(remaining);
+  if(remaining<=0){
+    clearInterval(countdown); countdown = null;
+    if(phase==='exec' && restInit){            // passa a recupero
+      setPhase('rest');
+      btn.click();                             // riparte in auto
+    }else{                                     // esercizio finito
+      setPhase(execInit ? 'exec' : 'rest');    // reset intero esercizio
+    }
+  }
+}
+
+/* ========= pulsante Avvia/Stop ========= */
+btn.onclick = ()=>{
+  if(countdown){                               // pausa
+    clearInterval(countdown); countdown=null; btn.textContent='Avvia';
+  }else{                                       // play
+    btn.textContent='Stop';
+    countdown=setInterval(tick,1000);
+  }
+};
+
+/* ========= init label ========= */
+lblPh.textContent = phase==='exec' ? 'Tempo di esecuzione' : 'Recupero';
+</script>
+{% endif %}
+{% endblock %}

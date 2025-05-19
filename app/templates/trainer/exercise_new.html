@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Nuovo esercizio{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <h2 class="mb-4">Crea nuovo esercizio</h2>
+
+  <form method="post" class="row g-3">
+
+    <div class="col-md-6">
+      <label class="form-label">Nome</label>
+      <input name="name" class="form-control" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">URL video (YouTube)</label>
+      <input name="video_url" class="form-control">
+    </div>
+
+    <div class="col-12">
+      <label class="form-label">Descrizione</label>
+      <textarea name="description" class="form-control" rows="2"></textarea>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Obiettivo</label>
+      <select name="objective" class="form-select">
+        <option value="">—</option>
+        {% for o in objectives %}
+          <option value="{{ o.name }}">{{ o.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Difficoltà</label>
+      <select name="difficulty" class="form-select">
+        <option value="">—</option>
+        {% for d in difficulties %}
+          <option value="{{ d.level }}">{{ d.level }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Macchinario richiesto</label>
+      <select name="machine_name" class="form-select">
+        <option value="">— nessuno —</option>
+        {% for m in machines %}
+          <option value="{{ m.name }}">{{ m.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    {# -------- Flags -------- #}
+    <div class="col-12">
+      <label class="form-label fw-semibold">Caratteristiche richieste</label>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" name="requires_repetitions" id="rep">
+        <label class="form-check-label" for="rep">Ripetizioni</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" name="requires_sets" id="set">
+        <label class="form-check-label" for="set">Set</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" name="requires_duration" id="dur">
+        <label class="form-check-label" for="dur">Durata</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" name="requires_rest" id="rest">
+        <label class="form-check-label" for="rest">Recupero</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" name="requires_machine" id="mach">
+        <label class="form-check-label" for="mach">Macchinario</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" name="requires_weight" id="kg">
+        <label class="form-check-label" for="kg">Peso</label>
+      </div>
+    </div>
+
+    {# -------- Gruppi muscolari -------- #}
+    <div class="col-md-6">
+      <label class="form-label">Gruppi primari</label>
+      <select name="primary_groups" class="form-select" multiple size="6">
+        {% for g in muscle_groups %}
+          <option value="{{ g.name }}">{{ g.name }}</option>
+        {% endfor %}
+      </select>
+      <small class="text-muted">Ctrl/⌘+Click per selezioni multiple</small>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Gruppi secondari</label>
+      <select name="secondary_groups" class="form-select" multiple size="6">
+        {% for g in muscle_groups %}
+          <option value="{{ g.name }}">{{ g.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-12 mt-3">
+      <button class="btn btn-success">Salva esercizio</button>
+      <a href="{{ url_for('trainer_page.exercises_page') }}" class="btn btn-secondary">Annulla</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

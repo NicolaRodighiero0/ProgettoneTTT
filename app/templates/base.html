@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>Trippi Troppi Training – {% block title %}{% endblock %}</title>
+
+  <!-- librerie -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+
+  <!-- stile comune (homestyle contiene tutto tranne l’hero) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/homestyle.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <link rel="apple-touch-icon" sizes="192x192"
+        href="{{ url_for('static', filename='icons/icon-192.png') }}">
+
+
+  {# eventuale CSS extra (es. home.css con hero‑banner) #}
+  {% block extra_css %}{% endblock %}
+</head>
+
+{# possibilità di aggiungere una classe personalizzata (es. has-hero) #}
+<body class="{% block body_class %}{% endblock %}">
+
+  <!-- NAVBAR fissa -->
+  <nav id="navbar" class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home.home') }}">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="navbar-logo">
+        <span class="brand-text ms-2">Trippi Troppi Training</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav ms-auto align-items-center">
+            {% if session.get('logged_in') %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('home.home') }}">Home</a>
+              </li>
+              {% if session.get('role') == 'trainer' %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('trainer_page.dashboard') }}">Dashboard</a>
+                </li>
+              {% elif session.get('role') == 'client' %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('client.dashboard') }}">Dashboard</a>
+                </li>
+              {% endif %}
+              <li class="nav-item">
+                <a class="nav-link logout-btn" href="{{ url_for('login.logout') }}">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('login.login_page') }}">Accedi</a>
+              </li>
+            {% endif %}
+            <li class="nav-item ms-2">
+              <button id="theme-toggle" class="theme-btn">🌙</button>
+            </li>
+          </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- JS per calcolare l’altezza reale della navbar -->
+  <script>
+    function setNavOffset () {
+      const h = document.getElementById('navbar').offsetHeight;
+      document.documentElement.style.setProperty('--nav-height', `${h}px`);
+    }
+    setNavOffset();
+    window.addEventListener('resize', setNavOffset);
+  </script>
+
+  <!-- CONTENUTO principale -->
+  <main class="container mt-4 flex-grow-1">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
+            {{ msg }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER (se ti serve lo puoi mettere qui) -->
+
+  <!-- Script -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="{{ url_for('static', filename='js/hometheme.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(reg => console.log('SW registrato con scope:', reg.scope))
+          .catch(err => console.error('SW fallito:', err));
+      });
+    }
+  </script>
+</body>
+</html>

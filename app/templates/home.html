@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Trippi Troppi Training{% endblock %}
+
+{% block content %}
+<!-- Hero Banner Section con Parallax -->
+<section class="hero-section" data-parallax="scroll" data-image-src="{{ url_for('static', filename='images/emptygym.webp') }}">
+    <div class="hero-overlay">
+        <div class="container">
+            <div class="hero-content text-center text-white fade-in">
+                <h1 class="display-1 fw-bold mb-4 slide-up">Trippi Troppi Training</h1>
+                <p class="lead mb-4 slide-up-delay">Trasforma il tuo corpo, migliora la tua vita</p>
+                {% if not session.get('logged_in') %}
+                    <div class="hero-buttons fade-in-delay">
+                        <a href="{{ url_for('login.login_page') }}" class="btn btn-primary btn-lg mx-2 pulse">Inizia Ora</a>
+                        <a href="{{ url_for('register.register') }}" class="btn btn-outline-light btn-lg mx-2 pulse">Registrati</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section with Animation -->
+<section class="features-section py-5" data-aos="fade-up">
+    <div class="container">
+        <h2 class="text-center mb-5 section-title">I Nostri Servizi</h2>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-right" data-aos-delay="100">
+                <div class="feature-card text-center p-4">
+                    <i class="fas fa-dumbbell feature-icon mb-3"></i>
+                    <h3>Allenamento Personalizzato</h3>
+                    <p>Programmi su misura creati dai nostri esperti trainer per raggiungere i tuoi obiettivi.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card text-center p-4">
+                    <i class="fas fa-chart-line feature-icon mb-3"></i>
+                    <h3>Monitoraggio Progressi</h3>
+                    <p>Tieni traccia dei tuoi miglioramenti con il nostro sistema di monitoraggio avanzato.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-left" data-aos-delay="300">
+                <div class="feature-card text-center p-4">
+                    <i class="fas fa-users feature-icon mb-3"></i>
+                    <h3>Supporto Continuo</h3>
+                    <p>I nostri trainer sono sempre disponibili per guidarti nel tuo percorso fitness.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="pricing-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5" data-aos="fade-up">I Nostri Abbonamenti</h2>
+        <div class="row">
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="pricing-card text-center">
+                    <h3>Base</h3>
+                    <div class="price mb-3">€29</div>
+                    <p class="text-muted mb-4">al mese</p>
+                    <ul class="list-unstyled mb-4">
+                        <li>✓ Accesso sala pesi</li>
+                        <li>✓ Spogliatoi</li>
+                        <li>✓ Assistenza base</li>
+                    </ul>
+                    <a href="{{ url_for('register.register') }}" class="btn btn-outline-primary">Scegli Piano</a>
+                </div>
+            </div>
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="pricing-card text-center">
+                    <h3>Premium</h3>
+                    <div class="price mb-3">€49</div>
+                    <p class="text-muted mb-4">al mese</p>
+                    <ul class="list-unstyled mb-4">
+                        <li>✓ Tutto del piano Base</li>
+                        <li>✓ Scheda personalizzata</li>
+                        <li>✓ Supporto trainer</li>
+                    </ul>
+                    <a href="{{ url_for('register.register') }}" class="btn btn-primary">Scegli Piano</a>
+                </div>
+            </div>
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="pricing-card text-center">
+                    <h3>Elite</h3>
+                    <div class="price mb-3">€79</div>
+                    <p class="text-muted mb-4">al mese</p>
+                    <ul class="list-unstyled mb-4">
+                        <li>✓ Tutto del piano Premium</li>
+                        <li>✓ Sessioni personal trainer</li>
+                        <li>✓ Accesso illimitato</li>
+                    </ul>
+                    <a href="{{ url_for('register.register') }}" class="btn btn-primary">Scegli Piano</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trainers Section -->
+<section class="trainers-section">
+    <div class="container">
+        <h2 class="text-center mb-5" data-aos="fade-up">I Nostri Trainer</h2>
+        <div class="row">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="trainer-card">
+                    <img src="{{ url_for('static', filename='images/trainer1.jpg') }}" alt="Trainer" class="trainer-img mb-3">
+                    <h4>Marco Rossi</h4>
+                    <p class="text-muted">Personal Trainer Certificato</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="trainer-card">
+                    <img src="{{ url_for('static', filename='images/trainer2.jpg') }}" alt="Trainer" class="trainer-img mb-3">
+                    <h4>Laura Bianchi</h4>
+                    <p class="text-muted">Specialista in Nutrizione Sportiva</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="trainer-card">
+                    <img src="{{ url_for('static', filename='images/trainer3.jpg') }}" alt="Trainer" class="trainer-img mb-3">
+                    <h4>Alessandro Verdi</h4>
+                    <p class="text-muted">Trainer Calisthenics</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section with Parallax -->
+<section class="cta-section py-5 text-white parallax-window" data-parallax="scroll" data-image-src="{{ url_for('static', filename='images/emptygym.webp') }}">
+    <div class="container text-center" data-aos="zoom-in">
+        <h2 class="mb-4">Pronto a Iniziare?</h2>
+        <p class="lead mb-4">Unisciti a noi e trasforma il tuo corpo con Trippi Troppi Training</p>
+        <a href="{{ url_for('register.register') }}" class="btn btn-primary btn-lg pulse">Inizia Ora</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/parallax.js/1.4.2/parallax.min.js"></script>
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}

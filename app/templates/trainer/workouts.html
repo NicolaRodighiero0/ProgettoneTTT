@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Schede – {{ client.username }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-3">Schede di {{ client.username }}</h2>
+
+  <a href="{{ url_for('trainer_page.new_workout', client_id=client.id) }}"
+     class="btn btn-success mb-3">
+     ➕ Nuova scheda
+  </a>
+
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>#</th><th>Nome</th><th>Data</th><th>Stato</th><th class="text-center">Azioni</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for p in plans %}
+      <tr class="{% if p.archived %}table-secondary{% endif %}">
+        <td>{{ loop.index }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.created_at|datetime }}</td>
+        <td>{{ 'Storica' if p.archived else 'Attiva' }}</td>
+        <td class="text-center">
+
+          <a class="btn btn-sm btn-outline-secondary me-2"
+            href="{{ url_for('trainer_page.view_workout', plan_id=p.id) }}">
+            Visualizza
+          </a>
+
+
+          <a class="btn btn-sm btn-outline-primary me-2"
+             href="{{ url_for('trainer_page.edit_workout', plan_id=p.id) }}">
+             Modifica
+          </a>
+          {% if not p.archived %}
+            <form method="post" action="{{ url_for('trainer_page.archive_workout', plan_id=p.id) }}"
+                  class="d-inline"
+                  onsubmit="return confirm('Archivia la scheda {{ p.name }}?');">
+              <button class="btn btn-sm btn-outline-warning">Archivia</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5" class="text-center py-4">Nessuna scheda presente.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

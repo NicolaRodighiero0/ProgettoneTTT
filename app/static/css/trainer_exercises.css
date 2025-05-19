@@ -1,0 +1,14 @@
+/* Spaziatura e allineamenti custom */
+.container h1 {
+    font-size: 1.8rem;
+  }
+  
+  #form-add-exercise .form-control,
+  #form-add-exercise .form-select {
+    width: 100%;
+  }
+  
+  #btn-cancel-add {
+    flex-shrink: 0;
+  }
+  

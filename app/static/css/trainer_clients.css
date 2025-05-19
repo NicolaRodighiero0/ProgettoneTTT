@@ -1,0 +1,14 @@
+/* trainer_clients.css */
+
+.container h1 {
+    font-size: 1.8rem;
+  }
+  
+  #form-add-client .form-control {
+    width: 100%;
+  }
+  
+  #form-add-client button {
+    width: 100%;
+  }
+  

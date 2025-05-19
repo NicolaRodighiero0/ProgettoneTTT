@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Nuova' if mode=='new' else 'Modifica' }} scheda{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <h2 class="mb-3">
+    {{ 'Nuova scheda' if mode=='new' else 'Modifica scheda' }}
+    {% if plan %}– {{ plan.name }}{% endif %}
+  </h2>
+
+  {# –––––––––– FORM –––––––––– #}
+  <form method="post" onsubmit="return buildPayload();">
+    <div class="mb-3 col-lg-6">
+      <label class="form-label">Nome scheda</label>
+      <input name="plan_name" class="form-control"
+             value="{{ '' if mode=='new' else plan.name }}" required>
+    </div>
+
+    <table id="exercise-table" class="table align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Esercizio</th>
+          <th class="text-center">Macchinario</th>
+          <th class="text-center">Rip.</th>
+          <th class="text-center">Set</th>
+          <th class="text-center">Peso (kg)</th>
+          <th class="text-center">Durata (s)</th>
+          <th class="text-center">Rest (s)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {# se modi­fica, pre‑popola le righe #}
+        {% if mode == 'edit' %}
+          {% for r in rows %}
+            <tr>
+              <td class="order">{{ loop.index }}</td>
+              <td><select class="form-select exercise-id">
+                {% for ex in exercises %}
+                  <option value="{{ ex.id }}"
+                          {% if ex.id == r.exercise_id %}selected{% endif %}>
+                    {{ ex.name }}
+                  </option>
+                {% endfor %}
+              </select></td>
+              <td> <select class="form-select machine-id">
+                <option value="">—</option>
+                {% for m in machines %}
+                  <option value="{{ m.id }}"
+                          {% if m.id == r.machine_id %}selected{% endif %}>
+                    {{ m.name }}
+                  </option>
+                {% endfor %}
+              </select></td>
+              <td><input type="number" class="form-control repetitions" value="{{ r.repetitions }}"></td>
+              <td><input type="number" class="form-control sets"        value="{{ r.sets }}"></td>
+              <td><input type="number" class="form-control suggested_kg" value="{{ r.suggested_kg }}"></td>
+              <td><input type="number" class="form-control exec_time_s"  value="{{ r.exec_time_s }}"></td>
+              <td><input type="number" class="form-control rest_s"       value="{{ r.rest_s }}"></td>
+              <td class="text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-row">&times;</button>
+              </td>
+            </tr>
+          {% endfor %}
+        {% endif %}
+      </tbody>
+    </table>
+
+    <button type="button" id="add-row" class="btn btn-outline-secondary mb-3">
+      + Aggiungi esercizio
+    </button>
+
+    <input type="hidden" name="exercise_payload" id="exercise_payload">
+
+    <div class="mt-4">
+      <button class="btn btn-primary">Salva</button>
+      <a class="btn btn-secondary"
+         href="{{ url_for('trainer_page.list_workouts',
+                          client_id=(client_id or plan.client_id)) }}">
+         Annulla
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{# –––––– JS / dati per il builder –––––– #}
+{% block extra_js %}
+  <script>
+    /* Arrivano dal controller come liste di dict */
+    const exerciseOptions = {{ exercises | tojson | safe }};
+    const machineOptions  = {{ machines  | tojson | safe }};
+  </script>
+  <script src="{{ url_for('static', filename='js/workout_builder.js') }}"></script>
+{% endblock %}

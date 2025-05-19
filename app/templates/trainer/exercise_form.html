@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Nuovo' if mode == 'new' else 'Modifica' }} esercizio{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <h2 class="mb-4">
+    {{ 'Crea nuovo' if mode == 'new' else 'Modifica' }} esercizio
+  </h2>
+
+  <form method="post" class="row g-3">
+
+    <!-- ─────────── Nome e video ─────────── -->
+    <div class="col-md-6">
+      <label class="form-label">Nome</label>
+      <input name="name" class="form-control"
+             value="{{ ex.name if mode == 'edit' else '' }}" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">URL video (YouTube)</label>
+      <input name="video_url" class="form-control"
+             value="{{ ex.video_url if mode == 'edit' else '' }}">
+    </div>
+
+    <!-- ─────────── Descrizione ─────────── -->
+    <div class="col-12">
+      <label class="form-label">Descrizione</label>
+      <textarea name="description" class="form-control" rows="2">
+        {{ ex.description if mode == 'edit' else '' }}
+      </textarea>
+    </div>
+
+    <!-- ─────────── Obiettivo ─────────── -->
+    <div class="col-md-4">
+      <label class="form-label">Obiettivo</label>
+      <select name="objective" class="form-select">
+        <option value="">—</option>
+        {% for o in objectives %}
+          <option value="{{ o.name }}"
+                  {% if mode == 'edit' and ex.objective == o.name %}selected{% endif %}>
+            {{ o.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- ─────────── Difficoltà ─────────── -->
+    <div class="col-md-4">
+      <label class="form-label">Difficoltà</label>
+      <select name="difficulty" class="form-select">
+        <option value="">—</option>
+        {% for d in difficulties %}
+          <option value="{{ d.level }}"
+                  {% if mode == 'edit' and ex.difficulty == d.level %}selected{% endif %}>
+            {{ d.level }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- ─────────── Macchinario ─────────── -->
+    <div class="col-md-4">
+      <label class="form-label">Macchinario richiesto</label>
+      <select name="machine_name" class="form-select">
+        <option value="">— nessuno —</option>
+        {% for m in machines %}
+          <option value="{{ m.name }}"
+                  {% if mode == 'edit' and ex.machine_name == m.name %}selected{% endif %}>
+            {{ m.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- ─────────── Flag caratteristiche ─────────── -->
+    <div class="col-12">
+      <label class="form-label fw-semibold">Caratteristiche richieste</label><br>
+      {% set flags = [
+        ('requires_repetitions', 'Ripetizioni'),
+        ('requires_sets',        'Set'),
+        ('requires_duration',    'Durata'),
+        ('requires_rest',        'Recupero'),
+        ('requires_machine',     'Macchinario'),
+        ('requires_weight',      'Peso')
+      ] %}
+      {% for field, label in flags %}
+        <div class="form-check form-check-inline">
+          <input type="checkbox" class="form-check-input"
+                 name="{{ field }}" id="{{ field }}"
+                 {% if mode == 'edit' and ex[field] %}checked{% endif %}>
+          <label class="form-check-label" for="{{ field }}">{{ label }}</label>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- ─────────── Gruppi muscolari ─────────── -->
+    <div class="col-md-6">
+      <label class="form-label">Gruppi primari</label>
+      <select name="primary_groups[]" class="form-select" multiple size="6">
+        {% for g in muscle_groups %}
+          <option value="{{ g.name }}"
+                  {% if mode == 'edit' and g.name in ex.primary_groups %}selected{% endif %}>
+            {{ g.name }}
+          </option>
+        {% endfor %}
+      </select>
+      <small class="text-muted">Ctrl/⌘ + Click per selezioni multiple</small>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Gruppi secondari</label>
+      <select name="secondary_groups[]" class="form-select" multiple size="6">
+        {% for g in muscle_groups %}
+          <option value="{{ g.name }}"
+                  {% if mode == 'edit' and g.name in ex.secondary_groups %}selected{% endif %}>
+            {{ g.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- ─────────── Pulsanti form ─────────── -->
+    <div class="col-12 mt-3">
+      <button class="btn btn-primary">
+        {{ 'Crea' if mode == 'new' else 'Salva' }}
+      </button>
+      <a href="{{ url_for('trainer_page.exercises_page') }}" class="btn btn-secondary">
+        Annulla
+      </a>
+    </div>
+
+  </form>
+</div>
+{% endblock %}

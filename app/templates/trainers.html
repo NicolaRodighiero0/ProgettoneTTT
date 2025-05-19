@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block title %}I Nostri Trainers{% endblock %}
+
+{% block content %}
+<section class="trainers-section py-5" data-aos="fade-up">
+  <div class="container">
+    <h2 class="section-title">I Nostri Trainers</h2>
+    <div class="row">
+      {% for t in trainers %}
+        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+          <div class="card text-center shadow-sm">
+            <img src="{{ url_for('static', filename='images/' ~ t.image) }}"
+                 alt="{{ t.name }}"
+                 class="rounded-circle mx-auto mt-3"
+                 style="width:150px; height:150px; object-fit:cover;">
+            <div class="card-body">
+              <h5 class="card-title">{{ t.name }}</h5>
+              <p class="card-text text-muted">{{ t.specialty }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
