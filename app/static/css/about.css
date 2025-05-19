@@ -82,3 +82,28 @@
     font-size: 0.9rem;
     color: #333;
   }
+
+  .team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.team-member {
+  text-align: center;
+  padding: 1rem;
+}
+
+.avatar.placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #fff;
+  margin: 0 auto 1rem;
+}

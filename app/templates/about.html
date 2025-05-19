@@ -13,36 +13,29 @@
 
   <h2 class="team-heading">Il nostro team</h2>
   <div class="team-grid">
-    <div class="team-member" data-member="mario">
-      <img src="{{ url_for('static', filename='images/mario.jpg') }}" alt="Mario Rossi">
-      <h3>Mario Rossi</h3>
+    <div class="team-member">
+      <div class="avatar placeholder">DG</div>
+      <h3>Dal Toso Giacomo</h3>
+      <p class="role">Project Manager & Full-Stack Developer</p>
+    </div>
+
+    <div class="team-member">
+      <div class="avatar placeholder">RN</div>
+      <h3>Rodighiero Nicola</h3>
       <p class="role">Full-Stack Developer</p>
-      <button class="btn-bio" onclick="toggleBio('mario')">Mostra Bio</button>
-      <div class="bio" id="bio-mario">
-        <p>Mario è specializzato in Python e Flask, ama il backend e l’ottimizzazione delle query SQL.</p>
-      </div>
     </div>
 
-    <div class="team-member" data-member="luca">
-      <img src="{{ url_for('static', filename='images/luca.jpg') }}" alt="Luca Bianchi">
-      <h3>Luca Bianchi</h3>
+    <div class="team-member">
+      <div class="avatar placeholder">BG</div>
+      <h3>Barausse Gregorio</h3>
       <p class="role">Front-End Developer</p>
-      <button class="btn-bio" onclick="toggleBio('luca')">Mostra Bio</button>
-      <div class="bio" id="bio-luca">
-        <p>Luca ha curato il design responsive e l’integrazione con Bootstrap e service worker.</p>
-      </div>
     </div>
 
-    <div class="team-member" data-member="anna">
-      <img src="{{ url_for('static', filename='images/anna.jpg') }}" alt="Anna Verdi">
-      <h3>Anna Verdi</h3>
-      <p class="role">Project Manager</p>
-      <button class="btn-bio" onclick="toggleBio('anna')">Mostra Bio</button>
-      <div class="bio" id="bio-anna">
-        <p>Anna coordina il team, monitora i tempi e garantisce il rispetto del Gantt e dei requisiti.</p>
-      </div>
+    <div class="team-member">
+      <div class="avatar placeholder">BN</div>
+      <h3>Berton Nicoló</h3>
+      <p class="role">Front-End Developer</p>
     </div>
   </div>
 </div>
-<script src="{{ url_for('static', filename='js/about.js') }}"></script>
 {% endblock %}
