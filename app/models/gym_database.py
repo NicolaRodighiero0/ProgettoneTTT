@@ -316,6 +316,51 @@ class GymDatabaseManager:
             self.insert_user("trainer", "trainerpass", "trainer")
             print("Default trainer created")
 
+    
+    def drop_all_tables(self):
+        """
+        Cancella tutte le tabelle create da `create_all_tables()`.
+
+        • Se la connessione è chiusa la apre e in coda la richiude.
+        • Disattiva i vincoli FK durante il DROP per evitare errori.
+        • Ricorda di aggiornare la lista se in futuro aggiungerai altre tabelle.
+        """
+        opened_here = False
+        if self.conn is None:
+            self.open_connection()
+            opened_here = True
+
+        self.conn.execute("PRAGMA foreign_keys = OFF;")
+
+        # Ordine: prima quelle con più dipendenze, poi le master
+        tables = [
+            "exercise_logs",
+            "workout_sessions",
+            "workout_plan_exercises",
+            "workout_exercises",
+            "workout_plans",
+            "exercise_muscle_groups",
+            "exercise",
+            "media",
+            "machines",
+            "exercise_difficulty",
+            "exercise_objectives",
+            "muscle_groups",
+            "jwt_sessions",
+            "user_profiles",
+            "notifications",
+            "users",
+        ]
+
+        for tbl in tables:
+            self.cursor.execute(f"DROP TABLE IF EXISTS `{tbl}`;")
+
+        self.conn.commit()
+        self.conn.execute("PRAGMA foreign_keys = ON;")
+
+        if opened_here:
+            self.close_connection()
+    
     # Gestione utenti
     def get_user_by_username(self, username):
         """Get a user by username"""
@@ -904,8 +949,9 @@ class GymDatabaseManager:
 
     def seed_initial_exercises(self):
         """
-        Aggiunge una serie di esercizi di esempio, con video YouTube,
-        flag e gruppi muscolari, alcuni richiedono macchinari.
+        Popola la tabella `exercise` con alcuni esempi.
+        Da quando il campo è diventato `media_url` (TEXT) salviamo
+        direttamente l’URL, senza passare da `media`.
         """
         exercises = [
             {
@@ -991,55 +1037,46 @@ class GymDatabaseManager:
         ]
 
         for ex in exercises:
-            # 1) media
+            # --- assicurati che la macchina esista (se richiesta) -------------
+            self._resolve_or_insert_machine(ex.get('machine_name'))
+
+            # --- foreign key objective / difficulty ---------------------------
             self.cursor.execute(
-                "INSERT INTO media (url, type) VALUES (?, 'video')",
-                (ex['video_url'],)
+                "SELECT id FROM exercise_objectives WHERE name = ?",
+                (ex['objective'],)
             )
-            media_id = self.cursor.lastrowid
+            obj_row = self.cursor.fetchone()
+            objective_id = obj_row['id'] if obj_row else None
 
-            # 2) resolve objective_id, difficulty_id
-            self.cursor.execute("SELECT id FROM exercise_objectives WHERE name = ?", (ex['objective'],))
-            obj = self.cursor.fetchone()
-            obj_id = obj['id'] if obj else None
-
-            self.cursor.execute("SELECT id FROM exercise_difficulty WHERE level = ?", (ex['difficulty'],))
-            diff = self.cursor.fetchone()
-            diff_id = diff['id'] if diff else None
-
-            # 3) insert exercise
             self.cursor.execute(
-                """
+                "SELECT id FROM exercise_difficulty WHERE level = ?",
+                (ex['difficulty'],)
+            )
+            diff_row = self.cursor.fetchone()
+            difficulty_id = diff_row['id'] if diff_row else None
+
+            # --- inserisci esercizio ------------------------------------------
+            self.cursor.execute("""
                 INSERT INTO exercise
                     (name, description, objective_id, difficulty_id, media_url,
-                     requires_repetitions, requires_duration, requires_rest,
-                     requires_sets, requires_machine, requires_weight)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    ex['name'], ex['description'], obj_id, diff_id, media_id,
-                    int(ex['requires_repetitions']), int(ex['requires_duration']),
-                    int(ex['requires_rest']), int(ex['requires_sets']),
-                    int(ex['requires_machine']), int(ex['requires_weight'])
-                )
-            )
+                    requires_repetitions, requires_duration, requires_rest,
+                    requires_sets, requires_machine, requires_weight)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)
+            """, (
+                ex['name'], ex['description'], objective_id, difficulty_id,
+                ex['video_url'],
+                int(ex['requires_repetitions']), int(ex['requires_duration']),
+                int(ex['requires_rest']), int(ex['requires_sets']),
+                int(ex['requires_machine']), int(ex['requires_weight'])
+            ))
             exercise_id = self.cursor.lastrowid
 
-            # 4) link muscle groups
-            for mg in ex['primary_groups']:
-                self.cursor.execute("SELECT id FROM muscle_groups WHERE name = ?", (mg,))
-                mg_id = self.cursor.fetchone()['id']
-                self.cursor.execute(
-                    "INSERT INTO exercise_muscle_groups (exercise_id, muscle_group_id, is_primary) VALUES (?, ?, 1)",
-                    (exercise_id, mg_id)
-                )
-            for mg in ex['secondary_groups']:
-                self.cursor.execute("SELECT id FROM muscle_groups WHERE name = ?", (mg,))
-                mg_id = self.cursor.fetchone()['id']
-                self.cursor.execute(
-                    "INSERT INTO exercise_muscle_groups (exercise_id, muscle_group_id, is_primary) VALUES (?, ?, 0)",
-                    (exercise_id, mg_id)
-                )
+            # --- collega i gruppi muscolari -----------------------------------
+            self._write_exercise_groups(
+                exercise_id,
+                ex.get('primary_groups', []),
+                ex.get('secondary_groups', [])
+            )
 
         self.conn.commit()    
 
