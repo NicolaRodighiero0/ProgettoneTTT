@@ -50,13 +50,7 @@ def statistics():
 def equipment():
     return render_template('equipment.html')
 
-# Route per la pagina about
-@pages_bp.route('/about')
-def about():
-    # Se non sei loggato, vai al login
-    if not session.get('logged_in'):
-        return redirect(url_for('login.login'))
-    return render_template('about.html')
+
 
 # Route per la pagina di contatto
 @pages_bp.route('/contact')
