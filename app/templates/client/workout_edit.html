@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Modifica scheda – {{ plan.name }}{% endblock %}
+
+{# — dizionario id → oggetto esercizio per leggere i flag — #}
+
+
+{% block content %}
+<div class="container py-4" style="max-width: 900px">
+  <h2 class="mb-3">{{ plan.name }}</h2>
+
+  <form method="post" id="edit-form">
+    <table class="table align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th><th>Esercizio</th>
+          <th class="text-center">Rip.</th>
+          <th class="text-center">Set</th>
+          <th class="text-center">Kg</th>
+          <th class="text-center">Tempo (s)</th>
+          <th class="text-center">Rest (s)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+          {% set f = flags[r.exercise_id] %}
+          <tr data-row="{{ r.id }}">
+            <td>{{ loop.index }}</td>
+            <td>{{ r.exercise_name }}</td>
+
+            <td class="text-center">
+              <input type="number" class="form-control form-control-sm reps"
+                     value="{{ r.repetitions or '' }}"
+                     {% if not f.requires_repetitions %}disabled{% endif %}>
+            </td>
+
+            <td class="text-center">
+              <input type="number" class="form-control form-control-sm sets"
+                     value="{{ r.sets or '' }}"
+                     {% if not f.requires_sets %}disabled{% endif %}>
+            </td>
+
+            <td class="text-center">
+              <input type="number" step="0.1"
+                     class="form-control form-control-sm kg"
+                     value="{{ r.suggested_kg or '' }}"
+                     {% if not f.requires_weight %}disabled{% endif %}>
+            </td>
+
+            <td class="text-center">
+              <input type="number" class="form-control form-control-sm exec"
+                     value="{{ r.exec_time_s or '' }}"
+                     {% if not f.requires_duration %}disabled{% endif %}>
+            </td>
+
+            <td class="text-center">
+              <input type="number" class="form-control form-control-sm rest"
+                     value="{{ r.rest_s or '' }}"
+                     {% if not f.requires_rest %}disabled{% endif %}>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <button class="btn btn-primary">Salva modifiche</button>
+    <a href="{{ url_for('client.workout_do', plan_id=plan.id, pos=1) }}"
+       class="btn btn-secondary">Annulla</a>
+  </form>
+</div>
+
+<script>
+/* --------------------------------------------------------------
+   Prima del submit serializziamo i campi abilitati di ogni riga
+   in un hidden "row_<ID>" = '{"repetitions":…, "kg":… }'
+-------------------------------------------------------------- */
+document.getElementById('edit-form').addEventListener('submit', () => {
+  document.querySelectorAll('tbody tr').forEach(tr => {
+    const get = sel => {
+      const inp = tr.querySelector(sel);
+      return (inp && !inp.disabled && inp.value !== '') ? inp.value : null;
+    };
+    const data = {
+      repetitions : get('.reps'),
+      sets        : get('.sets'),
+      suggested_kg: get('.kg'),
+      exec_time_s : get('.exec'),
+      rest_s      : get('.rest')
+    };
+    const hidden = document.createElement('input');
+    hidden.type  = 'hidden';
+    hidden.name  = 'row_' + tr.dataset.row;
+    hidden.value = JSON.stringify(data);
+    tr.appendChild(hidden);
+  });
+});
+</script>
+{% endblock %}

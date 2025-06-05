@@ -1,41 +1,44 @@
 {% extends 'base.html' %}
-{% block title %}Le tue schede{% endblock %}
+{% block title %}Le mie schede{% endblock %}
 
 {% block content %}
 <div class="container py-4">
-  <h2 class="mb-4">Le tue schede di allenamento attive</h2>
+  <h2 class="mb-3">Le mie schede</h2>
 
-  <table class="table table-striped">
-    <thead><tr>
-      <th>#</th><th>Nome</th><th>Creato il</th><th>Trainer</th><th></th>
-    </tr></thead>
+  <table class="table align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>#</th>
+        <th>Nome</th>
+        <th>Creato il</th>
+        <th class="text-end">Azioni</th>
+      </tr>
+    </thead>
     <tbody>
-      {% for p in plans %}
-        <tr>
-          <td>{{ loop.index }}</td>
-          <td>{{ p.name }}</td>
-          <td>{{ p.created_at[:10] }}</td>
-          <td>{{ p.trainer_name }}</td>
+    {% for plan in plans %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ plan.name }}</td>
+        <td>{{ plan.created_at|datetime('%d/%m/%Y') }}</td>
+        <td class="text-end">
+          <!-- Apri (esecuzione) -->
+          <a href="{{ url_for('client.workout_do',
+                              plan_id=plan.id, pos=1) }}"
+             class="btn btn-sm btn-outline-secondary">Apri</a>
 
-          
-          <td>
-            <td>
-              <a class="btn btn-sm btn-outline-success"
-   href="{{ url_for('client.workout_start', plan_id=p.id) }}">
-   Avvia
-</a>
-<a class="btn btn-sm btn-outline-secondary"
-href="{{ url_for('client.workout_start', plan_id=p.id) }}">
-Dettagli
-</a>
-            </td>
-          </td>
-        </tr>
-      {% else %}
-        <tr><td colspan="5" class="text-center py-4">
-          Nessuna scheda attiva.
-        </td></tr>
-      {% endfor %}
+          <!-- Modifica parametri -->
+          <a href="{{ url_for('client.edit_workout',
+                              plan_id=plan.id) }}"
+             class="btn btn-sm btn-primary">Modifica</a>
+        </td>
+      </tr>
+    {% else %}
+      <tr>
+        <td colspan="4" class="text-center py-4">
+          Nessuna scheda disponibile.
+        </td>
+      </tr>
+    {% endfor %}
     </tbody>
   </table>
 </div>

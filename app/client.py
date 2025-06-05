@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, session, redirect, url_for, abort
+from flask import Blueprint, render_template, session, redirect, url_for, abort, request, flash
 from app.models.gym_database import GymDatabaseManager
 from app.auth import login_required
+import json
 
 client_bp = Blueprint('client', __name__, url_prefix='/client')
 
@@ -62,3 +63,35 @@ def workout_do(plan_id, pos):
                            plan=header, ex=ex,
                            pos=pos, total=len(rows),
                            next_pos=next_pos, prev_pos=prev_pos)
+
+
+
+@client_bp.route('/workouts/<int:plan_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_workout(plan_id):
+    db = GymDatabaseManager(); db.open_connection()
+    header, rows = db.get_workout_plan(plan_id)
+
+    if not header or header['client_id'] != session['user_id']:
+        db.close_connection(); abort(404)
+
+    # ---------- POST ----------
+    if request.method == 'POST':
+        for field, values in request.form.lists():
+            if field.startswith('row_'):
+                row_id = int(field[4:])          # rimuove 'row_'
+                db.update_plan_row_from_client(row_id, json.loads(values[0]))
+
+        db.close_connection()
+        flash('Scheda aggiornata!', 'success')
+        return redirect(url_for('client.workout_do', plan_id=plan_id, pos=1))
+
+    # ---------- GET ----------
+    exercises = db.list_exercises()              # lista di dict
+    flags = {e['id']: e for e in exercises}      # ←  mapping id → esercizio
+    db.close_connection()
+
+    return render_template('client/workout_edit.html',
+                           plan=header,
+                           rows=rows,
+                           flags=flags)          # ←  passato al template

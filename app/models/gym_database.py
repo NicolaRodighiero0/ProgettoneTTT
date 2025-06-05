@@ -1476,6 +1476,31 @@ class GymDatabaseManager:
         cur = self.conn.execute("SELECT COUNT(*) FROM machines")
         return cur.fetchone()[0]
     
+    def update_plan_row_from_client(self, row_id: int, vals: dict):
+        """
+        Aggiorna gli unici campi che il cliente è autorizzato a toccare.
+        `vals` è un dict con (eventualmente) repetitions, sets, exec_time_s,
+        rest_s, suggested_kg – tutti opzionali, possono valere None.
+        """
+        self.conn.execute(
+            """UPDATE workout_plan_exercises
+                SET repetitions  = ?,
+                    sets         = ?,
+                    exec_time_s  = ?,
+                    rest_s       = ?,
+                    suggested_kg = ?
+                WHERE id = ?""",
+            (
+                vals.get("repetitions"),
+                vals.get("sets"),
+                vals.get("exec_time_s"),
+                vals.get("rest_s"),
+                vals.get("suggested_kg"),
+                row_id
+            )
+        )
+        self.conn.commit()
+    
 if __name__ == "__main__":
     db = GymDatabaseManager()
     
