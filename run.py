@@ -12,7 +12,7 @@ db.seed_default_machines()
 db.seed_clients_for_trainer(1, [
     ('alice', 'alicepass'),
     ('bob',   'bobpass'),
-])
+]) 
 db.close_connection()
 
 #utenti di debug
