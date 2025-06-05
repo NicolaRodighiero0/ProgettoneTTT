@@ -2,31 +2,48 @@
 {% block title %}Dashboard Trainer{% endblock %}
 
 {% block content %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/trainer_dashboard.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/trainer_dashboard.css') }}">
 
-  <div id="trainer-dashboard" class="dashboard-container">
-    <h1 class="dashboard-title">Dashboard Trainer</h1>
+<div id="trainer-dashboard" class="dashboard-container">
+  <h1 class="dashboard-title">Dashboard Trainer</h1>
 
-    <div class="stats-cards">
-      <div class="stat-card">
-        <div class="stat-number" id="stat-clients">–</div>
-        <div class="stat-label">Clienti</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number" id="stat-workouts">–</div>
-        <div class="stat-label">Workout creati</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number" id="stat-exercises">–</div>
-        <div class="stat-label">Esercizi disponibili</div>
-      </div>
+  <!-- ———  STATISTICHE  ——— -->
+  <div class="stats-cards">
+
+    <!-- clienti -->
+    <div class="stat-card" data-link="{{ url_for('trainer_page.manage_clients') }}">
+      <div class="stat-number" id="stat-clients">–</div>
+      <div class="stat-label">Clienti</div>
     </div>
 
-    <div class="actions">
-      <a href="{{ url_for('trainer_page.manage_clients') }}" class="btn btn-primary">Gestisci Clienti</a>
-      <a href="{{ url_for('trainer_page.exercises_page') }}" class="btn btn-secondary">Gestisci Esercizi</a>
+    <!-- workout creati -->
+    <div class="stat-card" id="card-workouts">
+      <div class="stat-number" id="stat-workouts">–</div>
+      <div class="stat-label">Workout creati</div>
     </div>
+
+    <!-- esercizi -->
+    <div class="stat-card" data-link="{{ url_for('trainer_page.exercises_page') }}">
+      <div class="stat-number" id="stat-exercises">–</div>
+      <div class="stat-label">Esercizi disponibili</div>
+    </div>
+
+    <!-- macchinari -->
+    <div class="stat-card" data-link="{{ url_for('trainer_page.machines_page') }}">
+      <div class="stat-number" id="stat-machines">–</div>
+      <div class="stat-label">Macchinari</div>
+    </div>
+
   </div>
 
-  <script src="{{ url_for('static', filename='js/trainer_dashboard.js') }}"></script>
+  <!-- ———  ACTION BUTTONS  ——— -->
+  <div class="actions">
+    <a href="{{ url_for('trainer_page.manage_clients') }}"  class="btn btn-primary">Gestisci Clienti</a>
+    <a href="{{ url_for('trainer_page.exercises_page') }}" class="btn btn-secondary">Gestisci Esercizi</a>
+    <a href="{{ url_for('trainer_page.machines_page') }}"  class="btn btn-outline-secondary">Gestisci Macchinari</a>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/trainer_dashboard.js') }}"></script>
 {% endblock %}

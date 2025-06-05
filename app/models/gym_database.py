@@ -137,7 +137,8 @@ class GymDatabaseManager:
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS machines (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL UNIQUE
+                name TEXT NOT NULL UNIQUE,
+                description TEXT
             );
         """)
 
@@ -1439,6 +1440,41 @@ class GymDatabaseManager:
             'Kettlebell', 'Panca Scott', 'Ellittica', 'Cyclette'
         ]
         self.add_machines(default_machines)
+        
+        
+    def list_machines(self):
+        cur = self.conn.execute("SELECT * FROM machines ORDER BY name")
+        return [dict(row) for row in cur]
+
+    def get_machine(self, mid: int):
+        cur = self.conn.execute("SELECT * FROM machines WHERE id=?", (mid,))
+        row = cur.fetchone()
+        return dict(row) if row else None
+
+    def create_machine(self, name: str, description: str | None = None):
+        cur = self.conn.cursor()
+        cur.execute(
+            "INSERT INTO machines (name, description) VALUES (?, ?)",
+            (name, description)
+        )
+        self.conn.commit()
+        return cur.lastrowid
+
+    def update_machine(self, mid: int, name: str, description: str | None = None):
+        self.conn.execute(
+            "UPDATE machines SET name=?, description=? WHERE id=?",
+            (name, description, mid)
+        )
+        self.conn.commit()
+
+    def delete_machine(self, mid: int):
+        self.conn.execute("DELETE FROM machines WHERE id=?", (mid,))
+        self.conn.commit()
+        
+        
+    def count_machines(self):
+        cur = self.conn.execute("SELECT COUNT(*) FROM machines")
+        return cur.fetchone()[0]
     
 if __name__ == "__main__":
     db = GymDatabaseManager()

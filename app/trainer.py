@@ -372,7 +372,81 @@ def get_stats_api():
     stats = {
         'clients': db.count_trainer_clients(session['user_id']),
         'workouts': db.count_workouts_by_trainer(session['user_id']),
-        'exercises': db.count_exercises()
+        'exercises': db.count_exercises(),
+        'machines' : db.count_machines()
     }
     db.close_connection()
     return jsonify(stats), 200
+
+
+
+@trainer_page_bp.route('/machines', methods=['GET', 'POST'])
+@login_required
+@trainer_required
+def machines_page():
+    db = GymDatabaseManager(); db.open_connection()
+
+    # POST → aggiungi nuovo macchinario dall’inline-form in pagina
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        desc = request.form.get('description', '').strip() or None
+        if not name:
+            flash('Il nome del macchinario è obbligatorio', 'warning')
+        elif db.create_machine(name, desc):
+            flash('Macchinario aggiunto', 'success')
+        else:
+            flash('Errore durante il salvataggio', 'danger')
+        db.close_connection()
+        return redirect(url_for('trainer_page.machines_page'))
+
+    machines = db.list_machines()
+    db.close_connection()
+    return render_template('trainer/machines.html', machines=machines)
+
+
+# FORM NUOVO -----------------------------------
+@trainer_page_bp.route('/machines/new', methods=['GET', 'POST'])
+@login_required
+@trainer_required
+def new_machine():
+    if request.method == 'POST':
+        db = GymDatabaseManager(); db.open_connection()
+        mid = db.create_machine(request.form['name'],
+                                request.form.get('description'))
+        db.close_connection()
+        flash('Macchinario creato', 'success')
+        return redirect(url_for('trainer_page.machines_page'))
+    return render_template('trainer/machine_form.html', mode='new')
+
+
+# EDIT -----------------------------------------
+@trainer_page_bp.route('/machines/<int:mid>/edit', methods=['GET', 'POST'])
+@login_required
+@trainer_required
+def edit_machine(mid):
+    db = GymDatabaseManager(); db.open_connection()
+    machine = db.get_machine(mid)
+    if not machine: db.close_connection(); abort(404)
+
+    if request.method == 'POST':
+        db.update_machine(mid,
+                          request.form['name'],
+                          request.form.get('description'))
+        db.close_connection()
+        flash('Macchinario aggiornato', 'success')
+        return redirect(url_for('trainer_page.machines_page'))
+
+    db.close_connection()
+    return render_template('trainer/machine_form.html',
+                           mode='edit', machine=machine)
+
+
+# DELETE ---------------------------------------
+@trainer_page_bp.route('/machines/<int:mid>/delete', methods=['POST'])
+@login_required
+@trainer_required
+def delete_machine(mid):
+    db = GymDatabaseManager(); db.open_connection()
+    db.delete_machine(mid); db.close_connection()
+    flash('Macchinario eliminato', 'success')
+    return redirect(url_for('trainer_page.machines_page'))

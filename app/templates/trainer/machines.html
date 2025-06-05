@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Macchinari{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <h2 class="mb-3">Macchinari</h2>
+
+  <!-- inline “aggiungi” -->
+  <form method="post" class="row g-2 mb-4">
+    <div class="col-sm-4">
+      <input name="name" class="form-control" placeholder="Nuovo macchinario" required>
+    </div>
+    <div class="col-sm-5">
+      <input name="description" class="form-control" placeholder="Descrizione">
+    </div>
+    <div class="col-sm-auto">
+      <button class="btn btn-primary">Aggiungi</button>
+    </div>
+  </form>
+
+  <!-- elenco -->
+  <table class="table table-striped align-middle">
+    <thead class="table-dark"><tr>
+      <th>#</th><th>Nome</th><th>Descrizione</th><th></th>
+    </tr></thead>
+    <tbody>
+      {% for m in machines %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ m.name }}</td>
+          <td>{{ m.description or '—' }}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary"
+               href="{{ url_for('trainer_page.edit_machine', mid=m.id) }}">Modifica</a>
+            <form method="post"
+                  action="{{ url_for('trainer_page.delete_machine', mid=m.id) }}"
+                  class="d-inline"
+                  onsubmit="return confirm('Eliminare il macchinario?');">
+              <button class="btn btn-sm btn-outline-danger">✕</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4" class="text-center py-4">Nessun macchinario.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
