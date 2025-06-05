@@ -93,5 +93,11 @@
     const exerciseOptions = {{ exercises | tojson | safe }};
     const machineOptions  = {{ machines  | tojson | safe }};
   </script>
+
+  <script type="text/javascript">
+  // Questa variabile JS sarà true se siamo in modalità modifica
+  const IS_EDIT_MODE = {{ 'true' if mode=='edit' else 'false' }};
+  </script>
+
   <script src="{{ url_for('static', filename='js/workout_builder.js') }}"></script>
 {% endblock %}

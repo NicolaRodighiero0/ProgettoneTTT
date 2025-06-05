@@ -247,7 +247,7 @@ def edit_workout(plan_id):
         db.close_connection(); abort(404)
 
     all_exercises = db.list_exercises()
-    all_machines  = db.get_machine_list()            # ➊  aggiungi questa riga
+    all_machines  = db.get_machine_list()            
 
     if request.method == 'POST':
         name = request.form['plan_name']
@@ -263,7 +263,7 @@ def edit_workout(plan_id):
                            plan=header,
                            rows=body,
                            exercises=all_exercises,
-                           machines=all_machines,            # ➋  passa la variabile
+                           machines=all_machines,            
                            mode='edit')
 
 # archivia (storico)

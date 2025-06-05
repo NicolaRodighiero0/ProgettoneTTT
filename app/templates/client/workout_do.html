@@ -35,7 +35,10 @@
     {% if exec_t %}• {{ exec_t }} s{% endif %}
     {% if rest_t %}• rec {{ rest_t }} s{% endif %}
     {% if ex.suggested_weight %}• {{ ex.suggested_weight }} kg{% endif %}
+    {% if ex.machine_name %}• {{ ex.machine_name }}{% endif %}
   </p>
+
+ 
 
   <!-- ---------- TIMER (exec → rest) ---------- -->
   {% if exec_t or rest_t %}

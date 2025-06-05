@@ -1235,21 +1235,44 @@ class GymDatabaseManager:
                 [dict(r) for r in body])
 
     # --- UPDATE ---
-    def update_workout_plan(self, plan_id:int, name:str, exercises:list[dict]):
+    def update_workout_plan(self, plan_id: int, name: str, exercises: list[dict]):
         cur = self.conn.cursor()
-        cur.execute("UPDATE workout_plans SET name=? WHERE id=?", (name, plan_id))
-        cur.execute("DELETE FROM workout_plan_exercises WHERE plan_id=?", (plan_id,))
-        # reinserisci il nuovo set di esercizi
+
+        # 1) aggiorna il nome della scheda
+        cur.execute(
+            "UPDATE workout_plans SET name = ? WHERE id = ?",
+            (name, plan_id)
+        )
+
+        # 2) elimina le vecchie righe
+        cur.execute(
+            "DELETE FROM workout_plan_exercises WHERE plan_id = ?",
+            (plan_id,)
+        )
+
+        # 3) reinserisci le righe aggiornate
         for idx, ex in enumerate(exercises, start=1):
-            cur.execute("""
-                INSERT INTO workout_plan_exercises
-                (plan_id, exercise_id, machine, repetitions, exec_time_s,
-                sets, rest_s, suggested_kg, ord_idx)
-                VALUES (?,?,?,?,?,?,?,?,?)
-            """, (plan_id, ex['exercise_id'], ex.get('machine'),
-                ex.get('repetitions'), ex.get('exec_time_s'),
-                ex.get('sets'), ex.get('rest_s'),
-                ex.get('suggested_kg'), idx))
+            mc_id = ex.get("machine_id")            # ← ora la chiave è machine_id
+            cur.execute(
+                """INSERT INTO workout_plan_exercises
+                    (plan_id, exercise_id, machine,       -- «machine» è la colonna del tuo schema
+                    repetitions, exec_time_s,
+                    sets,        rest_s,
+                    suggested_kg, ord_idx)
+                VALUES (?,?,?,?,?,?,?,?,?)""",
+                (
+                    plan_id,
+                    int(ex["exercise_id"]),
+                    int(mc_id) if mc_id else None,   # None ⇒ NULL nel DB
+                    ex.get("repetitions"),
+                    ex.get("exec_time_s"),
+                    ex.get("sets"),
+                    ex.get("rest_s"),
+                    ex.get("suggested_kg"),
+                    idx
+                )
+            )
+
         self.conn.commit()
 
     # --- ARCHIVE/DELETE ---
