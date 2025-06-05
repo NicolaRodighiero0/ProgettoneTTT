@@ -84,7 +84,7 @@ def edit_workout(plan_id):
 
         db.close_connection()
         flash('Scheda aggiornata!', 'success')
-        return redirect(url_for('client.workout_do', plan_id=plan_id, pos=1))
+        return redirect(url_for('client.dashboard', plan_id=plan_id, pos=1))
 
     # ---------- GET ----------
     exercises = db.list_exercises()              # lista di dict
@@ -95,3 +95,22 @@ def edit_workout(plan_id):
                            plan=header,
                            rows=rows,
                            flags=flags)          # ←  passato al template
+    
+    # ───────── DETTAGLIO (sola lettura) ─────────
+@client_bp.route('/workouts/<int:plan_id>/view')
+@login_required
+def workout_view(plan_id):
+    # solo utenti con ruolo client
+    if session.get('role') != 'client':
+        return redirect(url_for('login.login_page'))
+
+    db = GymDatabaseManager(); db.open_connection()
+    header, rows = db.get_workout_plan(plan_id)
+    db.close_connection()
+
+    # sicurezza: la scheda deve essere dell’utente loggato
+    if not header or header['client_id'] != session['user_id']:
+        abort(404)
+
+    return render_template('client/workout_view.html',
+                           plan=header, rows=rows)

@@ -30,6 +30,10 @@
           <a href="{{ url_for('client.edit_workout',
                               plan_id=plan.id) }}"
              class="btn btn-sm btn-primary">Modifica</a>
+
+             <a href="{{ url_for('client.workout_view', plan_id=plan.id) }}"
+   class="btn btn-sm btn-outline-info">Dettagli</a>
+
         </td>
       </tr>
     {% else %}

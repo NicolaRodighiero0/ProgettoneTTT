@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Scheda – {{ plan.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-3">{{ plan.name }}</h2>
+  <p class="text-muted">
+    Creato il: {{ plan.created_at|datetime('%d/%m/%Y') }}
+  </p>
+
+  <table class="table table-striped align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>#</th>
+        <th>Esercizio</th>
+        <th class="text-center">Rip.</th>
+        <th class="text-center">Set</th>
+        <th class="text-center">Peso (kg)</th>
+        <th class="text-center">Rest (s)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ r.exercise_name }}</td>
+          <td class="text-center">{{ r.repetitions or '—' }}</td>
+          <td class="text-center">{{ r.sets        or '—' }}</td>
+          <td class="text-center">{{ r.suggested_kg or '—' }}</td>
+          <td class="text-center">{{ r.rest_s      or '—' }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6" class="text-center py-4">Nessun esercizio.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{{ url_for('client.dashboard') }}" class="btn btn-secondary mt-3">
+    ‹ Torna alla dashboard
+  </a>
+</div>
+{% endblock %}
